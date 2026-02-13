@@ -15,8 +15,8 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Funky Sudoku Solver',
-  description: 'A groovy animated Sudoku solver with backtracking visualization',
+  title: 'Soooodokuuuu',
+  description: 'A groovy animated Sudoku solver with backtracking visualization and sound effects',
 }
 
 export const viewport: Viewport = {

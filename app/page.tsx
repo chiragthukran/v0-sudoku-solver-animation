@@ -12,8 +12,8 @@ export default function Home() {
             <Grid3X3 className="relative w-10 h-10 text-primary" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold font-mono tracking-tight text-balance">
-            <span className="text-primary">Funky</span>{' '}
-            <span className="text-secondary">Sudoku</span>
+            <span className="text-primary">Soooo</span>
+            <span className="text-secondary">dokuuuu</span>
           </h1>
         </div>
         <p className="text-muted-foreground font-mono text-sm text-center max-w-md leading-relaxed">
@@ -28,7 +28,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-12 pb-6 text-center">
         <p className="text-xs font-mono text-muted-foreground/50">
-          {'Backtracking visualizer \u00b7 Click a cell, type or tap a number, hit Solve'}
+  {'Soooodokuuuu \u00b7 Backtracking visualizer with sound \u00b7 Click a cell, tap a number, hit Solve'}
         </p>
       </footer>
     </main>

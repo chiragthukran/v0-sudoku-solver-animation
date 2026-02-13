@@ -12,7 +12,8 @@ import { NumberPad } from './number-pad'
 import { SpeedControl } from './speed-control'
 import { SolveStats } from './solve-stats'
 import { cn } from '@/lib/utils'
-import { Play, RotateCcw, Sparkles, Shuffle, Pause } from 'lucide-react'
+import { useSound } from '@/hooks/use-sound'
+import { Play, RotateCcw, Sparkles, Shuffle, Pause, Volume2, VolumeX } from 'lucide-react'
 
 const VALID_SIZES = [4, 6, 9]
 
@@ -61,6 +62,8 @@ function generateSamplePuzzle(size: number): CellState[][] {
 }
 
 export function SudokuSolver() {
+  const { play, setEnabled, isEnabled } = useSound()
+  const [soundOn, setSoundOn] = useState(true)
   const [gridSize, setGridSize] = useState(9)
   const [grid, setGrid] = useState<CellState[][]>(() => createEmptyGrid(9))
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
@@ -102,6 +105,7 @@ export function SudokuSolver() {
   }, [])
 
   const handleGridSizeChange = useCallback((newSize: number) => {
+    play('click')
     clearTimers()
     setGridSize(newSize)
     setGrid(createEmptyGrid(newSize))
@@ -115,16 +119,18 @@ export function SudokuSolver() {
     stepIndexRef.current = 0
     backtrackCountRef.current = 0
     isPausedRef.current = false
-  }, [clearTimers])
+  }, [clearTimers, play])
 
   const handleCellSelect = useCallback((row: number, col: number) => {
     if (status === 'solving') return
+    play('click')
     setSelectedCell({ row, col })
-  }, [status])
+  }, [status, play])
 
   const handleValueChange = useCallback(
     (row: number, col: number, value: number) => {
       if (status === 'solving') return
+      play(value !== 0 ? 'place' : 'backtrack')
       setGrid((prev) => {
         const newGrid = prev.map((r) => r.map((c) => ({ ...c })))
         newGrid[row][col] = {
@@ -143,7 +149,7 @@ export function SudokuSolver() {
         setElapsedTime(0)
       }
     },
-    [status]
+    [status, play]
   )
 
   const handleNumberFromPad = useCallback(
@@ -162,6 +168,7 @@ export function SudokuSolver() {
 
     if (idx >= steps.length) {
       // Done solving
+      play('solved')
       setGrid((prev) => {
         const newGrid = prev.map((r) =>
           r.map((c) => ({
@@ -183,6 +190,10 @@ export function SudokuSolver() {
     if (step.action === 'backtrack') {
       backtrackCountRef.current += 1
       setBacktracks(backtrackCountRef.current)
+      // Play backtrack sound every few backtracks to avoid ear fatigue
+      if (backtrackCountRef.current % 3 === 0) play('backtrack')
+    } else if (step.action === 'try' && idx % 4 === 0) {
+      play('try')
     }
 
     setGrid((prev) => {
@@ -199,7 +210,7 @@ export function SudokuSolver() {
     })
 
     animationRef.current = setTimeout(animateStep, speedRef.current)
-  }, [clearTimers])
+  }, [clearTimers, play])
 
   const handleSolve = useCallback(() => {
     if (status === 'solving') {
@@ -236,10 +247,12 @@ export function SudokuSolver() {
     const steps = generateSolveSteps(cleanGrid, gridSize)
 
     if (steps.length === 0) {
+      play('noSolution')
       setStatus('no-solution')
       return
     }
 
+    play('start')
     stepsRef.current = steps
     stepIndexRef.current = 0
     backtrackCountRef.current = 0
@@ -256,9 +269,10 @@ export function SudokuSolver() {
     }, 100)
 
     animationRef.current = setTimeout(animateStep, speedRef.current)
-  }, [status, grid, gridSize, animateStep, clearTimers, elapsedTime])
+  }, [status, grid, gridSize, animateStep, clearTimers, elapsedTime, play])
 
   const handleReset = useCallback(() => {
+    play('click')
     clearTimers()
     setGrid(createEmptyGrid(gridSize))
     setSelectedCell(null)
@@ -271,9 +285,10 @@ export function SudokuSolver() {
     stepIndexRef.current = 0
     backtrackCountRef.current = 0
     isPausedRef.current = false
-  }, [gridSize, clearTimers])
+  }, [gridSize, clearTimers, play])
 
   const handleLoadSample = useCallback(() => {
+    play('click')
     clearTimers()
     const sample = generateSamplePuzzle(gridSize)
     setGrid(sample)
@@ -287,7 +302,7 @@ export function SudokuSolver() {
     stepIndexRef.current = 0
     backtrackCountRef.current = 0
     isPausedRef.current = false
-  }, [gridSize, clearTimers])
+  }, [gridSize, clearTimers, play])
 
   const isSolving = status === 'solving'
   const isPaused = status === 'paused'
@@ -343,6 +358,26 @@ export function SudokuSolver() {
 
           {/* Speed Control */}
           <SpeedControl speed={speed} onSpeedChange={setSpeed} disabled={false} />
+
+          {/* Sound Toggle */}
+          <button
+            onClick={() => {
+              const next = !soundOn
+              setSoundOn(next)
+              setEnabled(next)
+              if (next) play('click')
+            }}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs',
+              'border transition-all duration-150',
+              soundOn
+                ? 'bg-accent/10 text-accent border-accent/30 hover:bg-accent/20'
+                : 'bg-muted/30 text-muted-foreground border-border/50 hover:bg-muted/50'
+            )}
+          >
+            {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            <span>Sound {soundOn ? 'On' : 'Off'}</span>
+          </button>
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-2">
