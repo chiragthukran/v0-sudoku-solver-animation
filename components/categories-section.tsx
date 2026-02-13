@@ -18,10 +18,10 @@ const categories = [
     title: 'Sorting',
     description: 'Bubble, Merge, Quick, Heap, Insertion, Selection and more visual comparisons',
     icon: ArrowUpDown,
-    problems: 7,
+    problems: 6,
     color: 'yellow' as const,
     tag: 'Classic',
-    href: '#',
+    href: '/problems/sorting',
   },
   {
     title: 'Searching',

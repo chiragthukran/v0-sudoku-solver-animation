@@ -30,14 +30,17 @@ export function SiteHeader() {
             Dashboard
           </Link>
           <Link
+            href="/problems/sorting"
+            className="text-sm font-mono text-muted-foreground hover:text-primary transition-colors"
+          >
+            Sorting
+          </Link>
+          <Link
             href="/problems/sudoku"
             className="text-sm font-mono text-muted-foreground hover:text-primary transition-colors"
           >
             Sudoku
           </Link>
-          <span className="text-sm font-mono text-muted-foreground/40 cursor-default">
-            More Soon
-          </span>
         </div>
 
         {/* Right */}
