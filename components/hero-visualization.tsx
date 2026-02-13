@@ -8,7 +8,7 @@ interface Particle {
   vx: number
   vy: number
   radius: number
-  color: string
+  color: readonly [number, number, number]
   connections: number[]
 }
 
@@ -26,11 +26,16 @@ export function HeroVisualization() {
     if (!ctx) return
 
     const colors = [
-      'hsl(45, 100%, 55%)',   // neon yellow
-      'hsl(340, 85%, 60%)',   // neon pink
-      'hsl(160, 80%, 45%)',   // neon green
-      'hsl(200, 90%, 55%)',   // neon blue
-    ]
+      [45, 100, 55],   // neon yellow
+      [340, 85, 60],   // neon pink
+      [160, 80, 45],   // neon green
+      [200, 90, 55],   // neon blue
+    ] as const
+
+    const hsl = (c: readonly [number, number, number]) =>
+      `hsl(${c[0]}, ${c[1]}%, ${c[2]}%)`
+    const hsla = (c: readonly [number, number, number], a: number) =>
+      `hsla(${c[0]}, ${c[1]}%, ${c[2]}%, ${a})`
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1
@@ -126,12 +131,8 @@ export function HeroVisualization() {
               particles[i].x, particles[i].y,
               particles[j].x, particles[j].y
             )
-            const c1 = particles[i].color.replace(')', ` / ${opacity})`)
-              .replace('hsl(', 'hsla(')
-            const c2 = particles[j].color.replace(')', ` / ${opacity})`)
-              .replace('hsl(', 'hsla(')
-            gradient.addColorStop(0, c1)
-            gradient.addColorStop(1, c2)
+            gradient.addColorStop(0, hsla(particles[i].color, opacity))
+            gradient.addColorStop(1, hsla(particles[j].color, opacity))
             ctx.strokeStyle = gradient
             ctx.lineWidth = 1
             ctx.stroke()
@@ -162,10 +163,8 @@ export function HeroVisualization() {
           p.x, p.y, 0,
           p.x, p.y, glowRadius
         )
-        const glowColor = p.color.replace(')', ' / 0.3)')
-          .replace('hsl(', 'hsla(')
-        gradient.addColorStop(0, glowColor)
-        gradient.addColorStop(1, 'transparent')
+        gradient.addColorStop(0, hsla(p.color, 0.3))
+        gradient.addColorStop(1, 'hsla(0, 0%, 0%, 0)')
         ctx.beginPath()
         ctx.arc(p.x, p.y, glowRadius, 0, Math.PI * 2)
         ctx.fillStyle = gradient
@@ -174,7 +173,7 @@ export function HeroVisualization() {
         // Node
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
-        ctx.fillStyle = p.color
+        ctx.fillStyle = hsl(p.color)
         ctx.fill()
       }
 
