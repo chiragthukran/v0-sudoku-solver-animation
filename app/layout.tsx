@@ -15,8 +15,8 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Soooodokuuuu',
-  description: 'A groovy animated Sudoku solver with backtracking visualization and sound effects',
+  title: 'SiliconAlgo - Interactive Algorithm Visualizer',
+  description: 'Watch algorithms come alive. Explore sorting, searching, graph traversal, backtracking, and more through playful real-time visual simulations.',
 }
 
 export const viewport: Viewport = {
@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${spaceMono.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${spaceMono.variable} scroll-smooth`}>
       <body className="font-sans antialiased min-h-screen">{children}</body>
     </html>
   )
